@@ -1,0 +1,904 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Autodiagnóstico de Madurez en IA — MXTI</title>
+
+<!-- Preconnect optimizado para fuentes -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="icon" href="https://mxti.mx/2024/wp-content/uploads/2023/11/logo.png">
+<style>
+  :root{
+    --bg-dark:#0b1220; --bg-dark-2:#0f1a2e;
+    --accent:#0ea5e9; --accent-2:#6c5ce7; --brand-mxti:#ffb020;
+    --text:#0f172a; --muted:#64748b;
+    --card:#ffffff; --line:#e5e7eb;
+    --error:#ef4444;
+    --radius:16px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:#eef2f7;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--text)}
+  a{color:var(--accent);text-decoration:none}
+
+  /* Marco de 20px alrededor de toda la página */
+  body { padding:20px !important; }
+  @media (max-width:640px){
+    body { padding:16px !important; }
+  }
+
+  /* Marco general (margen de página) */
+  #mxai-landing{ padding:20px; }
+  @media (max-width:640px){
+    #mxai-landing{ padding:16px; }
+  }
+
+  #mxai-landing .container{max-width:1200px;margin:0 auto;padding:0 24px}
+
+  /* HERO */
+  #mxai-landing .hero-wrap{border-radius:22px;overflow:hidden;box-shadow:0 14px 50px rgba(2,6,23,.25);background:#080c16; padding-bottom: 20px;}
+  #mxai-landing .hero{color:#fff;position:relative}
+  #mxai-landing .hero::before{
+    content:"";position:absolute;inset:0;z-index:-1;
+    background:
+      radial-gradient(900px 420px at 15% 0%, rgba(14,165,233,.35), transparent 60%),
+      radial-gradient(700px 360px at 85% -10%, rgba(108,92,231,.35), transparent 60%),
+      linear-gradient(180deg, var(--bg-dark-2), var(--bg-dark) 55%);
+  }
+  #mxai-landing header{padding:18px 0}
+  #mxai-landing .header-inner{display:flex;align-items:center;gap:18px;flex-wrap:wrap; padding:30px;}
+  #mxai-landing .logos{display:flex;gap:18px;align-items:center}
+  #mxai-landing .logos img{height:40px;object-fit:contain}
+  #mxai-landing .logos img.mxti{height:44px}
+  #mxai-landing .nav-cta{margin-left:auto;display:flex;gap:10px;flex-wrap:wrap}
+
+  #mxai-landing .hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:32px;align-items:center;padding:56px 0 42px}
+  #mxai-landing .pill{display:inline-flex;align-items:center;gap:10px;background:#101828;border:1px solid rgba(255,255,255,.22);color:#e7f8ff;padding:10px 14px;border-radius:999px;font-weight:700}
+  #mxai-landing .title{color:#fff;font-size:clamp(32px,4.6vw,56px);line-height:1.05;margin:16px 0 8px;font-weight:800;letter-spacing:-.02em}
+  #mxai-landing .subtitle{font-size:clamp(16px,2.1vw,19px);color:#eaf7ff;margin:16px 0 22px}
+  #mxai-landing .btn{display:inline-flex;gap:10px;align-items:center;border:0;border-radius:14px;padding:12px 18px;font-weight:800;cursor:pointer;transition:.2s transform,.2s box-shadow}
+  #mxai-landing .btn:active{transform:translateY(1px)}
+  #mxai-landing .btn-primary{background:#ffb020;color:#080c16;box-shadow:0 10px 24px rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.3)}
+  #mxai-landing .btn-secondary{background:rgba(255,255,255,.12);color:#eaf4ff;border:1px solid rgba(255,255,255,.25)}
+
+  /* Cards de features (con texto oscuro para legibilidad) */
+  #mxai-landing .feature-card{background:#fff;border:1px solid #dbe2ee;border-radius:var(--radius);padding:20px;box-shadow:0 8px 28px rgba(2,6,23,.08);color:var(--text)}
+  #mxai-landing .feature{display:flex;gap:14px;align-items:flex-start}
+  #mxai-landing .feature .icon{flex:0 0 40px;height:40px;border-radius:10px;background:#eef7ff;border:1px solid #cfe7ff;display:flex;align-items:center;justify-content:center;font-weight:800;color:#0b395b}
+  #mxai-landing .grid{display:grid;gap:16px}
+  #mxai-landing .grid-3{grid-template-columns:repeat(3,1fr)}
+
+  #mxai-landing .section{padding:56px 0}
+  #mxai-landing .card{background:var(--card);border:1.5px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:0 6px 16px rgba(2,6,23,.06)}
+  #mxai-landing .steps li{list-style:none;display:flex;gap:12px;align-items:start;margin:10px 0}
+  #mxai-landing .steps .n{flex:0 0 34px;height:34px;border-radius:50%;background:#111827;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800}
+  #mxai-landing .sticky-cta{position:sticky;bottom:14px;z-index:20;display:flex;justify-content:center}
+
+  @media (max-width:980px){#mxai-landing .hero-grid{grid-template-columns:1fr} #mxai-landing .grid-3{grid-template-columns:1fr}}
+
+  /* MODAL */
+  #mxai-landing .overlay{position:fixed;inset:0;background:rgba(15,23,42,.58);backdrop-filter:blur(3px);display:none;z-index:100;align-items:center;justify-content:center;overscroll-behavior:contain}
+  #mxai-landing .overlay.show{display:flex}
+  #mxai-landing .modal{position:relative;width:min(980px,96vw);background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 40px 100px rgba(0,0,0,.35);
+    display:flex;flex-direction:column;max-height:min(92vh,100svh);
+  }
+  #mxai-landing .modal-header{padding:14px 18px;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#fff;display:flex;justify-content:space-between;align-items:center}
+  #mxai-landing .modal-header h3{margin:0;font-size:18px}
+  #mxai-landing .close{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.6);border-radius:10px;color:#fff;font-weight:800;padding:6px 10px;cursor:pointer}
+  #mxai-landing .modal-body{padding:18px;
+    flex:1 1 auto;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
+  }
+  #mxai-landing .modal-intro{background:#f6fbff;border:1px dashed #cfe9ff;border-radius:12px;padding:12px;margin:10px 0}
+  #mxai-landing .progress{height:8px;background:#e6edf6;border-radius:999px;overflow:hidden}
+  #mxai-landing .progress .bar{height:100%;width:0;background:linear-gradient(90deg,var(--brand-mxti),var(--accent));transition:width .25s}
+  #mxai-landing .stepper{display:grid;grid-template-columns:repeat(8,1fr);gap:6px;margin:10px 0}
+  #mxai-landing .stepper .dot{height:5px;background:#e6edf6;border-radius:999px}
+  #mxai-landing .stepper .dot.active{background:linear-gradient(90deg,var(--brand-mxti),var(--accent))}
+  #mxai-landing .form-step{display:none}
+  #mxai-landing .form-step.active{display:block;animation:fade .2s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  #mxai-landing label{font-weight:700;margin:8px 0 6px;display:block}
+  #mxai-landing input[type=text],#mxai-landing input[type=email],#mxai-landing textarea{width:100%;padding:12px;border:1.5px solid #d3dae6;border-radius:12px;background:#fff}
+  #mxai-landing .chips{display:flex;flex-wrap:wrap;gap:10px}
+  #mxai-landing .chip{border:1.5px solid #cad3e3;border-radius:999px;padding:8px 12px;background:#fff;display:inline-flex;gap:8px;align-items:center}
+
+  /* ESTILOS LIKERT MODERNOS */
+  #mxai-landing .likert-options input[type="radio"] { display: none; }
+  #mxai-landing .likert-question { background-color: #f8fafc; border: 1.5px solid var(--line); border-radius: 14px; padding: 16px; margin-bottom: 12px; }
+  #mxai-landing .likert-question p { margin: 0 0 12px 0; font-weight: 600; color: var(--text); }
+  #mxai-landing .likert-options { display: flex; gap: 8px; justify-content: space-between; }
+  #mxai-landing .likert-options label { flex: 1; text-align: center; padding: 10px 5px; border: 1.5px solid #d3dae6; border-radius: 10px; cursor: pointer; font-weight: 700; transition: background-color 0.2s, color 0.2s, border-color 0.2s; background-color: #fff; }
+  #mxai-landing .likert-options label:hover { border-color: var(--accent); background-color: #f0f9ff; }
+  #mxai-landing .likert-options input[type="radio"]:checked + label { background: linear-gradient(90deg,var(--accent),var(--accent-2)); color: #fff; border-color: var(--accent); }
+
+  #mxai-landing .note{font-size:13px;color:var(--muted)}
+  #mxai-landing .btn-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+  #mxai-landing .hide{display:none!important}
+  #mxai-landing .error{border-color:var(--error)!important;box-shadow:0 0 0 3px rgba(239,68,68,.15)}
+  @keyframes shake{10%,90%{transform:translateX(-1px)}20%,80%{transform:translateX(2px)}30%,50%,70%{transform:translateX(-4px)}40%,60%{transform:translateX(4px)}}
+  #mxai-landing .shake{animation:shake .35s linear 1}
+  #mxai-landing .toast{position:fixed;right:18px;top:18px;background:#111827;color:#fff;padding:10px 14px;border-radius:12px;box-shadow:0 10px 26px rgba(0,0,0,.25);z-index:120;display:none}
+  #mxai-landing .toast.show{display:block}
+
+  footer{padding:28px 0;background:#0b1220;color:#cfe6ff}
+  footer .logos img{height:28px}
+
+  @media (min-width: 1024px){
+    #mxai-landing header.container{ padding-left: 64px !important; padding-right: 32px !important; }
+    #mxai-landing .hero > .container{ padding-left: 64px !important; padding-right: 32px !important; }
+    #mxai-landing .hero-grid{ grid-template-columns: 0.85fr 1.15fr !important; column-gap: 40px !important; padding-right: 40px !important; }
+    #mxai-landing .feature-card{ padding: 28px !important; }
+  }
+
+  body.modal-open{ overflow:hidden; overscroll-behavior:contain; }
+</style>
+</head>
+<body>
+<section id="mxai-landing">
+
+  <!-- HERO -->
+  <div class="hero-wrap">
+    <div class="hero">
+      <header class="container">
+        <div class="header-inner">
+          <div class="logos">
+            <img class="mxti" src="https://mxti.mx/2024/wp-content/uploads/2023/11/logo.png" alt="MXTI" loading="lazy" decoding="async">
+            <img src="https://csoftmty.org/wp-content/uploads/2022/03/csoftmty_logo.png" alt="Csoftmty" loading="lazy" decoding="async">
+            <img src="https://monterreyitcluster.com/wp-content/uploads/2025/04/MITC_logo_T.png" alt="MITC" loading="lazy" decoding="async">
+          </div>
+          <div class="nav-cta">
+            <a href="#como-funciona" class="btn btn-secondary">¿Por qué hacerlo?</a>
+            <button class="btn btn-primary" data-open="modal">Empezar diagnóstico</button>
+          </div>
+        </div>
+      </header>
+
+      <div class="container hero-grid">
+        <div>
+          <span class="pill">Diagnóstico gratuito • 10 min</span>
+          <h1 class="title">Autodiagnóstico de Madurez en Inteligencia Artificial</h1>
+          <p class="subtitle">
+            Iniciativa de la <strong style="color:var(--brand-mxti)">Comisión de IA del MXTI</strong>, en colaboración con Csoftmty y MITC.
+            Ubica dónde estás hoy, evita “parches tecnológicos” y construye una adopción de IA uniforme, con <strong>ROI</strong> y gobierno.
+          </p>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn btn-primary" data-open="modal">Comenzar ahora</button>
+            <a href="#como-funciona" class="btn btn-secondary">Cómo funciona</a>
+          </div>
+          <p id="resumeBox" class="note" style="margin-top:10px;display:none">
+            Tienes un diagnóstico sin terminar. <a href="javascript:void(0)" id="resumeLink">Continuar donde lo dejaste</a> ·
+            <a href="javascript:void(0)" id="resetLink">limpiar</a>
+          </p>
+        </div>
+
+        <div class="feature-card">
+          <div class="grid grid-3">
+            <div class="feature"><div class="icon">✓</div><div><strong>Casos con valor y gobernanza</strong><br><span class="note">Priorización con comité y lineamientos.</span></div></div>
+            <div class="feature"><div class="icon">📈</div><div><strong>ROI y eficiencia</strong><br><span class="note">Tiempo ahorrado con métricas claras.</span></div></div>
+            <div class="feature"><div class="icon">🔒</div><div><strong>Uso responsable</strong><br><span class="note">Seguridad, legal y gobierno de datos.</span></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sticky-cta">
+        <button class="btn btn-primary" data-open="modal">Responder diagnóstico</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CÓMO FUNCIONA -->
+  <section class="section" id="como-funciona">
+    <div class="container card">
+      <h2 style="margin:0 0 10px;font-size:clamp(26px,3.2vw,36px);letter-spacing:-.01em">¿Cómo funciona?</h2>
+      <p class="note" style="margin-top:0">9 pasos, menos de 10 minutos. Es un vistazo de lo que vas a contestar:</p>
+      <ul class="steps">
+        <li><div class="n">1</div><div><strong>Datos generales</strong> — nombre, empresa, puesto y correo.</div></li>
+        <li><div class="n">2</div><div><strong>Contexto digital</strong> — ERP/CRM y tecnologías actuales (con “Otros”).</div></li>
+        <li><div class="n">3</div><div><strong>Datos y gobierno de datos</strong> — dónde viven, frescura/actualización y responsable.</div></li>
+        <li><div class="n">4</div><div><strong>Toma de decisiones</strong> — estrategia, métricas, aspectos legales, pilotos.</div></li>
+        <li><div class="n">5</div><div><strong>Competencias de IA</strong> — conocimientos, tendencias, capacitación, viabilidad técnica.</div></li>
+        <li><div class="n">6</div><div><strong>Desarrollo de IA</strong> — talento, herramientas, modelos, plataformas y proveedores.</div></li>
+        <li><div class="n">7</div><div><strong>Utilización</strong> — soluciones en operación, eficiencia, interacción diaria, plan de escalamiento.</div></li>
+        <li><div class="n">8</div><div><strong>Liderazgo y gobernanza</strong> — líderes, comunicación, roles, cultura de innovación.</div></li>
+        <li><div class="n">9</div><div><strong>Intereses y desafíos</strong> — áreas de impacto (mín 3), soluciones (máx 3), texto libre y consentimiento.</div></li>
+      </ul>
+      <div style="margin-top:10px"><button class="btn btn-primary" data-open="modal">Empezar diagnóstico</button></div>
+    </div>
+  </section>
+
+  <!-- MODAL -->
+  <div class="overlay" id="overlay" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-label="Autodiagnóstico">
+      <div class="modal-header">
+        <h3>Autodiagnóstico de Madurez en IA</h3>
+        <button class="close" id="closeModal" aria-label="Cerrar">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-intro">
+          <strong>¡Bienvenido!</strong> Por favor comparte tus datos y contesta con la mayor honestidad posible.
+          Al final verás tu resultado y recibirás un correo con recomendaciones para tu <em>roadmap</em> de implantación, maximizando ROI y evitando “parches tecnológicos”.
+        </div>
+
+        <div class="progress"><div class="bar" id="progressBar"></div></div>
+        <div class="stepper" id="stepDots"></div>
+
+        <p class="note" id="scaleInfo" style="display:none;margin:8px 0 12px">
+          Escala: 1 = No existe / No considerado · 2 = Exploración · 3 = Implementación básica · 4 = En expansión · 5 = Integrado / Madurez.
+        </p>
+
+        <div id="wizard">
+          <!-- Paso 1 -->
+          <div class="form-step active" data-step="1">
+            <div class="card">
+              <div style="display:grid;gap:14px;grid-template-columns:1fr 1fr">
+                <div><label>Nombre *</label><input id="f_nombre" type="text" required></div>
+                <div><label>Apellidos *</label><input id="f_apellidos" type="text" required></div>
+                <div><label>Empresa *</label><input id="f_empresa" type="text" required></div>
+                <div><label>Puesto *</label><input id="f_puesto" type="text" required></div>
+                <div style="grid-column:1 / span 2"><label>Correo electrónico *</label><input id="f_correo" type="email" required></div>
+              </div>
+              <p class="note">* Campos obligatorios</p>
+            </div>
+          </div>
+
+          <!-- Paso 2 -->
+          <div class="form-step" data-step="2">
+            <div class="card">
+              <div style="display:grid;gap:16px;grid-template-columns:1fr 1fr">
+                <div>
+                  <label>¿Cuentan con ERP? (selecciona los que apliquen)</label>
+                  <div class="chips" id="erp-list"></div>
+                  <label style="margin-top:8px">Otros (ERP)</label>
+                  <input id="erp-otros" type="text" placeholder="Especifica otros ERPs">
+                </div>
+                <div>
+                  <label>¿Utilizan un CRM? (selecciona los que apliquen)</label>
+                  <div class="chips" id="crm-list"></div>
+                  <label style="margin-top:8px">Otros (CRM)</label>
+                  <input id="crm-otros" type="text" placeholder="Especifica otros CRMs">
+                </div>
+              </div>
+              <div style="margin-top:10px">
+                <label>¿Qué tipos de Inteligencia Artificial conoces?</label>
+                <div class="chips" id="tipos-ia"></div>
+                <label style="margin-top:8px">Otros (IA)</label>
+                <input id="tipos-ia-otros" type="text" placeholder="Especifica otros tipos de IA">
+              </div>
+            </div>
+          </div>
+
+          <!-- Paso 3: Datos y Gobierno de Datos -->
+          <div class="form-step" data-step="3">
+            <h3 style="margin: 0 0 10px 0;">Datos y gobierno de datos</h3>
+            <div class="card" style="display:grid;gap:16px;">
+              <div>
+                <label>¿Dónde viven hoy sus datos principales? (selecciona los que apliquen)</label>
+                <div class="chips" id="repos-datos"></div>
+                <label style="margin-top:8px">Otros (repositorios)</label>
+                <input id="repos-otros" type="text" placeholder="Especifica otro repositorio">
+              </div>
+
+              <div class="likert-question">
+                <p>Calidad de datos medida (completitud, duplicados, consistencia).</p>
+                <div class="likert-options">
+                  <input type="radio" id="datos.calidad.1" name="datos.calidad" value="1"><label for="datos.calidad.1">1</label>
+                  <input type="radio" id="datos.calidad.2" name="datos.calidad" value="2"><label for="datos.calidad.2">2</label>
+                  <input type="radio" id="datos.calidad.3" name="datos.calidad" value="3" checked><label for="datos.calidad.3">3</label>
+                  <input type="radio" id="datos.calidad.4" name="datos.calidad" value="4"><label for="datos.calidad.4">4</label>
+                  <input type="radio" id="datos.calidad.5" name="datos.calidad" value="5"><label for="datos.calidad.5">5</label>
+                </div>
+              </div>
+
+              <div class="likert-question">
+                <p>Actualización/frescura de datos alineada al negocio.</p>
+                <div class="likert-options">
+                  <input type="radio" id="datos.frescura.1" name="datos.frescura" value="1"><label for="datos.frescura.1">1</label>
+                  <input type="radio" id="datos.frescura.2" name="datos.frescura" value="2"><label for="datos.frescura.2">2</label>
+                  <input type="radio" id="datos.frescura.3" name="datos.frescura" value="3" checked><label for="datos.frescura.3">3</label>
+                  <input type="radio" id="datos.frescura.4" name="datos.frescura" value="4"><label for="datos.frescura.4">4</label>
+                  <input type="radio" id="datos.frescura.5" name="datos.frescura" value="5"><label for="datos.frescura.5">5</label>
+                </div>
+              </div>
+
+              <div>
+                <label>Responsable de datos / contacto</label>
+                <input id="datos-owner" type="text" placeholder="Nombre y correo de contacto de datos">
+              </div>
+            </div>
+          </div>
+
+          <!-- Paso 4: Decisiones -->
+          <div class="form-step" data-step="4">
+              <h3 style="margin: 0 0 10px 0;">1) Toma de decisiones en IA</h3>
+              <div class="likert-question">
+                  <p>Estrategia clara y documentada para adopción de IA.</p>
+                  <div class="likert-options">
+                      <input type="radio" id="dec.estrategia.1" name="dec.estrategia" value="1"><label for="dec.estrategia.1">1</label>
+                      <input type="radio" id="dec.estrategia.2" name="dec.estrategia" value="2"><label for="dec.estrategia.2">2</label>
+                      <input type="radio" id="dec.estrategia.3" name="dec.estrategia" value="3" checked><label for="dec.estrategia.3">3</label>
+                      <input type="radio" id="dec.estrategia.4" name="dec.estrategia" value="4"><label for="dec.estrategia.4">4</label>
+                      <input type="radio" id="dec.estrategia.5" name="dec.estrategia" value="5"><label for="dec.estrategia.5">5</label>
+                  </div>
+              </div>
+              <div class="likert-question">
+                  <p>Métricas y metodologías para evaluar impacto económico.</p>
+                  <div class="likert-options">
+                      <input type="radio" id="dec.metricas.1" name="dec.metricas" value="1"><label for="dec.metricas.1">1</label>
+                      <input type="radio" id="dec.metricas.2" name="dec.metricas" value="2"><label for="dec.metricas.2">2</label>
+                      <input type="radio" id="dec.metricas.3" name="dec.metricas" value="3" checked><label for="dec.metricas.3">3</label>
+                      <input type="radio" id="dec.metricas.4" name="dec.metricas" value="4"><label for="dec.metricas.4">4</label>
+                      <input type="radio" id="dec.metricas.5" name="dec.metricas" value="5"><label for="dec.metricas.5">5</label>
+                  </div>
+              </div>
+              <div class="likert-question">
+                  <p>Conocimiento de aspectos legales/regulatorios.</p>
+                  <div class="likert-options">
+                      <input type="radio" id="dec.legales.1" name="dec.legales" value="1"><label for="dec.legales.1">1</label>
+                      <input type="radio" id="dec.legales.2" name="dec.legales" value="2"><label for="dec.legales.2">2</label>
+                      <input type="radio" id="dec.legales.3" name="dec.legales" value="3" checked><label for="dec.legales.3">3</label>
+                      <input type="radio" id="dec.legales.4" name="dec.legales" value="4"><label for="dec.legales.4">4</label>
+                      <input type="radio" id="dec.legales.5" name="dec.legales" value="5"><label for="dec.legales.5">5</label>
+                  </div>
+              </div>
+              <div class="likert-question">
+                  <p>Alta dirección comprende riesgos/beneficios.</p>
+                  <div class="likert-options">
+                      <input type="radio" id="dec.altaDireccion.1" name="dec.altaDireccion" value="1"><label for="dec.altaDireccion.1">1</label>
+                      <input type="radio" id="dec.altaDireccion.2" name="dec.altaDireccion" value="2"><label for="dec.altaDireccion.2">2</label>
+                      <input type="radio" id="dec.altaDireccion.3" name="dec.altaDireccion" value="3" checked><label for="dec.altaDireccion.3">3</label>
+                      <input type="radio" id="dec.altaDireccion.4" name="dec.altaDireccion" value="4"><label for="dec.altaDireccion.4">4</label>
+                      <input type="radio" id="dec.altaDireccion.5" name="dec.altaDireccion" value="5"><label for="dec.altaDireccion.5">5</label>
+                  </div>
+              </div>
+              <div class="likert-question">
+                  <p>Estudios o pilotos para evaluar aplicaciones de IA.</p>
+                  <div class="likert-options">
+                      <input type="radio" id="dec.pilotos.1" name="dec.pilotos" value="1"><label for="dec.pilotos.1">1</label>
+                      <input type="radio" id="dec.pilotos.2" name="dec.pilotos" value="2"><label for="dec.pilotos.2">2</label>
+                      <input type="radio" id="dec.pilotos.3" name="dec.pilotos" value="3" checked><label for="dec.pilotos.3">3</label>
+                      <input type="radio" id="dec.pilotos.4" name="dec.pilotos" value="4"><label for="dec.pilotos.4">4</label>
+                      <input type="radio" id="dec.pilotos.5" name="dec.pilotos" value="5"><label for="dec.pilotos.5">5</label>
+                  </div>
+              </div>
+          </div>
+
+          <!-- Paso 5: Competencias -->
+          <div class="form-step" data-step="5">
+              <h3 style="margin: 0 0 10px 0;">2) Competencias básicas de IA</h3>
+              <div class="likert-question">
+                  <p>Entendimiento de conceptos clave de IA.</p>
+                  <div class="likert-options">
+                      <input type="radio" id="comp.conceptos.1" name="comp.conceptos" value="1"><label for="comp.conceptos.1">1</label>
+                      <input type="radio" id="comp.conceptos.2" name="comp.conceptos" value="2"><label for="comp.conceptos.2">2</label>
+                      <input type="radio" id="comp.conceptos.3" name="comp.conceptos" value="3" checked><label for="comp.conceptos.3">3</label>
+                      <input type="radio" id="comp.conceptos.4" name="comp.conceptos" value="4"><label for="comp.conceptos.4">4</label>
+                      <input type="radio" id="comp.conceptos.5" name="comp.conceptos" value="5"><label for="comp.conceptos.5">5</label>
+                  </div>
+              </div>
+              <div class="likert-question">
+                  <p>Tendencias y avances recientes en nuestro sector.</p>
+                  <div class="likert-options">
+                      <input type="radio" id="comp.tendencias.1" name="comp.tendencias" value="1"><label for="comp.tendencias.1">1</label>
+                      <input type="radio" id="comp.tendencias.2" name="comp.tendencias" value="2"><label for="comp.tendencias.2">2</label>
+                      <input type="radio" id="comp.tendencias.3" name="comp.tendencias" value="3" checked><label for="comp.tendencias.3">3</label>
+                      <input type="radio" id="comp.tendencias.4" name="comp.tendencias" value="4"><label for="comp.tendencias.4">4</label>
+                      <input type="radio" id="comp.tendencias.5" name="comp.tendencias" value="5"><label for="comp.tendencias.5">5</label>
+                  </div>
+              </div>
+              <div class="likert-question">
+                  <p>Capacitaciones internas o externas.</p>
+                  <div class="likert-options">
+                      <input type="radio" id="comp.capacitaciones.1" name="comp.capacitaciones" value="1"><label for="comp.capacitaciones.1">1</label>
+                      <input type="radio" id="comp.capacitaciones.2" name="comp.capacitaciones" value="2"><label for="comp.capacitaciones.2">2</label>
+                      <input type="radio" id="comp.capacitaciones.3" name="comp.capacitaciones" value="3" checked><label for="comp.capacitaciones.3">3</label>
+                      <input type="radio" id="comp.capacitaciones.4" name="comp.capacitaciones" value="4"><label for="comp.capacitaciones.4">4</label>
+                      <input type="radio" id="comp.capacitaciones.5" name="comp.capacitaciones" value="5"><label for="comp.capacitaciones.5">5</label>
+                  </div>
+              </div>
+              <div class="likert-question">
+                  <p>Personal capaz de evaluar viabilidad técnica.</p>
+                  <div class="likert-options">
+                      <input type="radio" id="comp.viabilidad.1" name="comp.viabilidad" value="1"><label for="comp.viabilidad.1">1</label>
+                      <input type="radio" id="comp.viabilidad.2" name="comp.viabilidad" value="2"><label for="comp.viabilidad.2">2</label>
+                      <input type="radio" id="comp.viabilidad.3" name="comp.viabilidad" value="3" checked><label for="comp.viabilidad.3">3</label>
+                      <input type="radio" id="comp.viabilidad.4" name="comp.viabilidad" value="4"><label for="comp.viabilidad.4">4</label>
+                      <input type="radio" id="comp.viabilidad.5" name="comp.viabilidad" value="5"><label for="comp.viabilidad.5">5</label>
+                  </div>
+              </div>
+          </div>
+
+          <!-- Paso 6: Desarrollo -->
+          <div class="form-step" data-step="6">
+              <h3 style="margin: 0 0 10px 0;">3) Desarrollo de IA</h3>
+              <div class="likert-question">
+                  <p>Talento interno en datos / ML / IA.</p>
+                  <div class="likert-options">
+                      <input type="radio" id="dev.talento.1" name="dev.talento" value="1"><label for="dev.talento.1">1</label>
+                      <input type="radio" id="dev.talento.2" name="dev.talento" value="2"><label for="dev.talento.2">2</label>
+                      <input type="radio" id="dev.talento.3" name="dev.talento" value="3" checked><label for="dev.talento.3">3</label>
+                      <input type="radio" id="dev.talento.4" name="dev.talento" value="4"><label for="dev.talento.4">4</label>
+                      <input type="radio" id="dev.talento.5" name="dev.talento" value="5"><label for="dev.talento.5">5</label>
+                  </div>
+              </div>
+              <div class="likert-question">
+                  <p>Herramientas de IA no gratuitas en procesos.</p>
+                  <div class="likert-options">
+                      <input type="radio" id="dev.noGratis.1" name="dev.noGratis" value="1"><label for="dev.noGratis.1">1</label>
+                      <input type="radio" id="dev.noGratis.2" name="dev.noGratis" value="2"><label for="dev.noGratis.2">2</label>
+                      <input type="radio" id="dev.noGratis.3" name="dev.noGratis" value="3" checked><label for="dev.noGratis.3">3</label>
+                      <input type="radio" id="dev.noGratis.4" name="dev.noGratis" value="4"><label for="dev.noGratis.4">4</label>
+                      <input type="radio" id="dev.noGratis.5" name="dev.noGratis" value="5"><label for="dev.noGratis.5">5</label>
+                  </div>
+              </div>
+              <div class="likert-question">
+                  <p>Modelos de IA desarrollados o modificados.</p>
+                  <div class="likert-options">
+                      <input type="radio" id="dev.modelos.1" name="dev.modelos" value="1"><label for="dev.modelos.1">1</label>
+                      <input type="radio" id="dev.modelos.2" name="dev.modelos" value="2"><label for="dev.modelos.2">2</label>
+                      <input type="radio" id="dev.modelos.3" name="dev.modelos" value="3" checked><label for="dev.modelos.3">3</label>
+                      <input type="radio" id="dev.modelos.4" name="dev.modelos" value="4"><label for="dev.modelos.4">4</label>
+                      <input type="radio" id="dev.modelos.5" name="dev.modelos" value="5"><label for="dev.modelos.5">5</label>
+                  </div>
+              </div>
+              <div class="likert-question">
+                  <p>Plataformas de análisis de datos para IA/ML.</p>
+                  <div class="likert-options">
+                      <input type="radio" id="dev.plataformas.1" name="dev.plataformas" value="1"><label for="dev.plataformas.1">1</label>
+                      <input type="radio" id="dev.plataformas.2" name="dev.plataformas" value="2"><label for="dev.plataformas.2">2</label>
+                      <input type="radio" id="dev.plataformas.3" name="dev.plataformas" value="3" checked><label for="dev.plataformas.3">3</label>
+                      <input type="radio" id="dev.plataformas.4" name="dev.plataformas" value="4"><label for="dev.plataformas.4">4</label>
+                      <input type="radio" id="dev.plataformas.5" name="dev.plataformas" value="5"><label for="dev.plataformas.5">5</label>
+                  </div>
+              </div>
+              <div class="likert-question">
+                  <p>Trabajo con proveedores externos de IA.</p>
+                  <div class="likert-options">
+                      <input type="radio" id="dev.proveedores.1" name="dev.proveedores" value="1"><label for="dev.proveedores.1">1</label>
+                      <input type="radio" id="dev.proveedores.2" name="dev.proveedores" value="2"><label for="dev.proveedores.2">2</label>
+                      <input type="radio" id="dev.proveedores.3" name="dev.proveedores" value="3" checked><label for="dev.proveedores.3">3</label>
+                      <input type="radio" id="dev.proveedores.4" name="dev.proveedores" value="4"><label for="dev.proveedores.4">4</label>
+                      <input type="radio" id="dev.proveedores.5" name="dev.proveedores" value="5"><label for="dev.proveedores.5">5</label>
+                  </div>
+              </div>
+          </div>
+
+          <!-- Paso 7: Utilización -->
+          <div class="form-step" data-step="7">
+              <h3 style="margin: 0 0 10px 0;">4) Utilización de IA</h3>
+              <div class="likert-question">
+                  <p>Soluciones de IA en áreas clave.</p>
+                  <div class="likert-options">
+                      <input type="radio" id="use.clave.1" name="use.clave" value="1"><label for="use.clave.1">1</label>
+                      <input type="radio" id="use.clave.2" name="use.clave" value="2"><label for="use.clave.2">2</label>
+                      <input type="radio" id="use.clave.3" name="use.clave" value="3" checked><label for="use.clave.3">3</label>
+                      <input type="radio" id="use.clave.4" name="use.clave" value="4"><label for="use.clave.4">4</label>
+                      <input type="radio" id="use.clave.5" name="use.clave" value="5"><label for="use.clave.5">5</label>
+                  </div>
+              </div>
+              <div class="likert-question">
+                  <p>IA para eficiencia operativa.</p>
+                  <div class="likert-options">
+                      <input type="radio" id="use.eficiencia.1" name="use.eficiencia" value="1"><label for="use.eficiencia.1">1</label>
+                      <input type="radio" id="use.eficiencia.2" name="use.eficiencia" value="2"><label for="use.eficiencia.2">2</label>
+                      <input type="radio" id="use.eficiencia.3" name="use.eficiencia" value="3" checked><label for="use.eficiencia.3">3</label>
+                      <input type="radio" id="use.eficiencia.4" name="use.eficiencia" value="4"><label for="use.eficiencia.4">4</label>
+                      <input type="radio" id="use.eficiencia.5" name="use.eficiencia" value="5"><label for="use.eficiencia.5">5</label>
+                  </div>
+              </div>
+              <div class="likert-question">
+                  <p>Interacción diaria de empleados con IA.</p>
+                  <div class="likert-options">
+                      <input type="radio" id="use.interaccion.1" name="use.interaccion" value="1"><label for="use.interaccion.1">1</label>
+                      <input type="radio" id="use.interaccion.2" name="use.interaccion" value="2"><label for="use.interaccion.2">2</label>
+                      <input type="radio" id="use.interaccion.3" name="use.interaccion" value="3" checked><label for="use.interaccion.3">3</label>
+                      <input type="radio" id="use.interaccion.4" name="use.interaccion" value="4"><label for="use.interaccion.4">4</label>
+                      <input type="radio" id="use.interaccion.5" name="use.interaccion" value="5"><label for="use.interaccion.5">5</label>
+                  </div>
+              </div>
+              <div class="likert-question">
+                  <p>Plan para escalar soluciones.</p>
+                  <div class="likert-options">
+                      <input type="radio" id="use.escalar.1" name="use.escalar" value="1"><label for="use.escalar.1">1</label>
+                      <input type="radio" id="use.escalar.2" name="use.escalar" value="2"><label for="use.escalar.2">2</label>
+                      <input type="radio" id="use.escalar.3" name="use.escalar" value="3" checked><label for="use.escalar.3">3</label>
+                      <input type="radio" id="use.escalar.4" name="use.escalar" value="4"><label for="use.escalar.4">4</label>
+                      <input type="radio" id="use.escalar.5" name="use.escalar" value="5"><label for="use.escalar.5">5</label>
+                  </div>
+              </div>
+          </div>
+
+          <!-- Paso 8: Liderazgo -->
+          <div class="form-step" data-step="8">
+              <h3 style="margin: 0 0 10px 0;">5) Liderazgo y gobernanza</h3>
+              <div class="likert-question">
+                  <p>Líderes capacitados para guiar adopción.</p>
+                  <div class="likert-options">
+                      <input type="radio" id="gov.lideres.1" name="gov.lideres" value="1"><label for="gov.lideres.1">1</label>
+                      <input type="radio" id="gov.lideres.2" name="gov.lideres" value="2"><label for="gov.lideres.2">2</label>
+                      <input type="radio" id="gov.lideres.3" name="gov.lideres" value="3" checked><label for="gov.lideres.3">3</label>
+                      <input type="radio" id="gov.lideres.4" name="gov.lideres" value="4"><label for="gov.lideres.4">4</label>
+                      <input type="radio" id="gov.lideres.5" name="gov.lideres" value="5"><label for="gov.lideres.5">5</label>
+                  </div>
+              </div>
+              <div class="likert-question">
+                  <p>Comunicación clara; dudas abordadas.</p>
+                  <div class="likert-options">
+                      <input type="radio" id="gov.comunicacion.1" name="gov.comunicacion" value="1"><label for="gov.comunicacion.1">1</label>
+                      <input type="radio" id="gov.comunicacion.2" name="gov.comunicacion" value="2"><label for="gov.comunicacion.2">2</label>
+                      <input type="radio" id="gov.comunicacion.3" name="gov.comunicacion" value="3" checked><label for="gov.comunicacion.3">3</label>
+                      <input type="radio" id="gov.comunicacion.4" name="gov.comunicacion" value="4"><label for="gov.comunicacion.4">4</label>
+                      <input type="radio" id="gov.comunicacion.5" name="gov.comunicacion" value="5"><label for="gov.comunicacion.5">5</label>
+                  </div>
+              </div>
+              <div class="likert-question">
+                  <p>Roles específicos para IA.</p>
+                  <div class="likert-options">
+                      <input type="radio" id="gov.roles.1" name="gov.roles" value="1"><label for="gov.roles.1">1</label>
+                      <input type="radio" id="gov.roles.2" name="gov.roles" value="2"><label for="gov.roles.2">2</label>
+                      <input type="radio" id="gov.roles.3" name="gov.roles" value="3" checked><label for="gov.roles.3">3</label>
+                      <input type="radio" id="gov.roles.4" name="gov.roles" value="4"><label for="gov.roles.4">4</label>
+                      <input type="radio" id="gov.roles.5" name="gov.roles" value="5"><label for="gov.roles.5">5</label>
+                  </div>
+              </div>
+              <div class="likert-question">
+                  <p>Cultura de innovación y experimentación.</p>
+                  <div class="likert-options">
+                      <input type="radio" id="gov.cultura.1" name="gov.cultura" value="1"><label for="gov.cultura.1">1</label>
+                      <input type="radio" id="gov.cultura.2" name="gov.cultura" value="2"><label for="gov.cultura.2">2</label>
+                      <input type="radio" id="gov.cultura.3" name="gov.cultura" value="3" checked><label for="gov.cultura.3">3</label>
+                      <input type="radio" id="gov.cultura.4" name="gov.cultura" value="4"><label for="gov.cultura.4">4</label>
+                      <input type="radio" id="gov.cultura.5" name="gov.cultura" value="5"><label for="gov.cultura.5">5</label>
+                  </div>
+              </div>
+          </div>
+
+          <!-- Paso 9 -->
+          <div class="form-step" data-step="9">
+            <div class="card">
+              <div style="display:grid;gap:16px;grid-template-columns:1fr 1fr">
+                <div>
+                  <label>Áreas con mayor impacto (mínimo 3)</label>
+                  <div class="chips" id="areas-impacto"></div>
+                  <label style="margin-top:8px">Otros (áreas)</label><input id="areas-otros" type="text" placeholder="Otra área">
+                </div>
+                <div>
+                  <label>Soluciones de interés (máximo 3)</label>
+                  <div class="chips" id="soluciones"></div>
+                  <label style="margin-top:8px">Otros (soluciones)</label><input id="soluciones-otros" type="text" placeholder="Otra solución">
+                </div>
+              </div>
+              <label style="margin-top:10px">Principales desafíos (texto libre)</label>
+              <textarea id="f_desafios" rows="3" placeholder="Talento, datos, presupuesto, seguridad, cambio cultural…"></textarea>
+              <div style="margin-top:10px"><label><input type="checkbox" id="consent"> Acepto el uso de mis datos para recibir el resultado y seguimiento.</label></div>
+            </div>
+          </div>
+
+          <div class="btn-row">
+            <button type="button" class="btn" id="prev">Anterior</button>
+            <button type="button" class="btn btn-primary" id="next">Siguiente</button>
+            <button type="button" class="btn btn-primary hide" id="submit">Enviar diagnóstico</button>
+          </div>
+
+          <div id="results" class="hide" style="margin-top:16px">
+            <div class="card">
+              <h3 style="margin-top:0">Resultado del autodiagnóstico</h3>
+              <div id="kpi" style="display:grid;gap:12px;grid-template-columns:repeat(3,1fr)"></div>
+              <canvas id="radar" height="180" style="margin:16px 0 8px"></canvas>
+              <p class="note"><strong>¡Gracias!</strong> En breve te llegará un correo con tus resultados y recomendaciones.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <form id="gform" method="POST" target="hidden_iframe"
+        action="https://docs.google.com/forms/d/e/1FAIpQLSf-XC9Ade4vVpG03zf-qsZkMm3XWuR4hkUP_XMQ4mWs9yCCLA/formResponse" class="hide"></form>
+  <iframe name="hidden_iframe" class="hide"></iframe>
+
+  <section class="section" style="padding-top:0">
+    <div class="container" style="text-align:center">
+      <h2 style="font-size:clamp(26px,3.2vw,36px);margin:0 0 6px;letter-spacing:-.01em">¿Listo para ubicar tu punto de partida?</h2>
+      <p class="note" style="margin-top:0">Diagnóstico gratuito, resultados inmediatos y correo con siguientes pasos.</p>
+      <button class="btn btn-primary" data-open="modal">Comenzar diagnóstico</button>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container" style="display:flex;gap:16px;justify-content:space-between;align-items:center;flex-wrap:wrap">
+      <div class="logos">
+        <img class="mxti" src="https://mxti.mx/2024/wp-content/uploads/2023/11/logo.png" alt="MXTI" loading="lazy" decoding="async">
+        <img src="https://csoftmty.org/wp-content/uploads/2022/03/csoftmty_logo.png" alt="Csoftmty" loading="lazy" decoding="async">
+        <img src="https://monterreyitcluster.com/wp-content/uploads/2025/04/MITC_logo_T.png" alt="MITC" loading="lazy" decoding="async">
+      </div>
+      <small>© <span id="year"></span> MXTI · Comisión de IA — con Csoftmty y MITC</small>
+    </div>
+  </footer>
+
+  <div class="toast" id="toast">Completa los campos marcados.</div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  const $ = (s, d=document) => d.querySelector(s);
+  const $$ = (s, d=document) => Array.from(d.querySelectorAll(s));
+  $('#year').textContent = new Date().getFullYear();
+
+  function showToast(msg){
+    const t = $('#toast'); t.textContent = msg; t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'), 2600);
+  }
+  function shake(el){ el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake'); }
+  function markError(el){ el.classList.add('error'); el.scrollIntoView({behavior:'smooth', block:'center'}); }
+
+  const overlay = $('#overlay');
+  let _scrollTop = 0;
+  function openModal(){
+    _scrollTop = window.scrollY || document.documentElement.scrollTop || 0;
+    document.body.classList.add('modal-open');
+    overlay.classList.add('show');
+    updateProgress();
+  }
+  function closeModal(){
+    overlay.classList.remove('show');
+    document.body.classList.remove('modal-open');
+  }
+  document.addEventListener('click', (e)=>{
+    const openBtn = e.target.closest('[data-open="modal"]');
+    if(openBtn){ openModal(); }
+  });
+  $('#closeModal').addEventListener('click', closeModal);
+  overlay.addEventListener('touchmove', function(e){
+    if(!e.target.closest('.modal-body')) e.preventDefault();
+  }, { passive:false });
+
+  const GF = {
+    nombre:"entry.682099543", apellidos:"entry.609170452", empresa:"entry.1627338238", puesto:"entry.1000654576", correo:"entry.690231408",
+    erp:"entry.479860004", crm:"entry.172803516", 
+    tiposIA:"entry.1557146009", // CORREGIDO según tu formulario
+    // Nuevo grupo repositorios (para appendGroup)
+    reposDatos:"entry.48329018",
+    // Campos de Datos & Gobierno de Datos
+    datos:{
+      repos:"entry.48329018",        // (referencia idéntica a reposDatos)
+      calidad:"entry.2086932382",    // Likert 1–5: calidad
+      frescura:"entry.810208576",    // Likert 1–5: frescura
+      owner:"entry.663102632"        // Texto: responsable
+    },
+    decisiones:{ estrategia:"entry.1096850246", metricas:"entry.850578915", legales:"entry.1104915099", altaDireccion:"entry.171466154", pilotos:"entry.931908269" },
+    compBasicas:{ conceptos:"entry.595276712", tendencias:"entry.2093098079", capacitaciones:"entry.1028635946", viabilidad:"entry.266474639" },
+    desarrollo:{ talento:"entry.1325517008", noGratis:"entry.1444642069", modelos:"entry.2144417299", plataformas:"entry.1549944648", proveedores:"entry.497830653" },
+    utilizacion:{ clave:"entry.70291619", eficiencia:"entry.347050382", interaccion:"entry.1368765451", escalar:"entry.424646241" },
+    liderazgo:{ lideres:"entry.1709979910", comunicacion:"entry.2081187253", roles:"entry.651623439", cultura:"entry.83380445" },
+    desafios:"entry.2136623157", areasImpacto:"entry.1223769359", soluciones:"entry.920744498",
+  };
+
+  const OPTIONS = {
+    erp:["Oracle","SAP","Dynamics 365","Odoo","Microsip","Contpaq","ASPEL","QAD","NO TENGO ERP (uso excel)"],
+    crm:["Zoho","Salesforce","HubSpot","Dynamics 365 CRM","Pipedrive","NO TENGO CRM (uso Excel)"],
+    tiposIA:["IA Generativa (ChatGPT, Copilot, Gemini, etc)","Visión por computadora","Análisis de datos (Machine Learning)","Business Intelligence","Análisis Predictivos"],
+    areasImpacto:["Operaciones","Finanzas","Recursos Humanos","Reclutamiento y selección","Marketing y Ventas","Atención al Cliente","Innovación y Desarrollo de Productos","TI y Ciberseguridad","Cadena de Suministro / Logística"],
+    soluciones:[
+      "Análisis de documentos con IA ( Conversación con contratos, reportes, indicadores, etc)",
+      "Asistentes Virtuales (Chatbots para atención a clientes o soporte interno).",
+      "Análisis de datos avanzado (Generación de dashboards con IA conversacional).",
+      "Optimización de procesos (Automatización de tareas en áreas operativas y estratégicas).",
+      "IA Generativa para contenido (Creación de textos, imágenes y videos con IA).",
+      "Gestión de clientes y ventas (Chatbot comercial para búsqueda de productos y cotizaciones automáticas).",
+      "Análisis de comportamiento del cliente (Chatbot de retail con analítica de datos).",
+      "Control financiero y riesgos (Detección de fraudes, predicción de riesgos y optimización financiera).",
+      "Gestión de cobranzas (Chatbot para gestión de deudores y recuperación de cartera).",
+      "Desarrollo de software con IA (Automatización de código, pruebas y optimización de sistemas)."
+    ],
+    // Nuevo: repositorios de datos
+    reposDatos:[
+      "Data warehouse (BigQuery, Redshift, Synapse)",
+      "Data lake (S3, GCS, ADLS)",
+      "Bases de datos relacionales (MySQL, PostgreSQL, SQL Server, Oracle)",
+      "NoSQL (MongoDB, Elastic, Cassandra, etc.)",
+      "Drives compartidos (Google Drive/SharePoint/OneDrive)",
+      "ERPs/CRMs como única fuente",
+      "Sistemas OT/SCADA/IoT"
+    ],
+  };
+
+  function renderChips(containerId, arr, name){
+    const c = $('#'+containerId);
+    arr.forEach((txt,i)=>{
+      const id=`${name}-${i}`;
+      const el=document.createElement('label');
+      el.className='chip'; el.innerHTML=`<input type="checkbox" data-group="${name}" id="${id}" value="${txt}"> ${txt}`;
+      c.appendChild(el);
+    });
+  }
+  renderChips('erp-list',OPTIONS.erp,'erp');
+  renderChips('crm-list',OPTIONS.crm,'crm');
+  renderChips('tipos-ia',OPTIONS.tiposIA,'tiposIA');
+  renderChips('areas-impacto',OPTIONS.areasImpacto,'areasImpacto');
+  renderChips('soluciones',OPTIONS.soluciones,'soluciones');
+  // Nuevo render repositorios de datos
+  renderChips('repos-datos',OPTIONS.reposDatos,'reposDatos');
+
+  // Pasos (ahora 9)
+  const stepsTotal=9; let step=1;
+  const stepDots=$('#stepDots'); for(let i=1;i<=stepsTotal;i++){ const d=document.createElement('div'); d.className='dot'+(i===1?' active':''); stepDots.appendChild(d); }
+  function showStep(){
+    $$('.form-step').forEach(s=>s.classList.remove('active'));
+    $(`.form-step[data-step="${step}"]`).classList.add('active');
+    $('#prev').classList.toggle('hide',step===1);
+    $('#next').classList.toggle('hide',step===stepsTotal);
+    $('#submit').classList.toggle('hide',step!==stepsTotal);
+    // Escala visible en pasos con Likert (4 a 8)
+    $('#scaleInfo').style.display = (step>=4 && step<=8) ? 'block':'none';
+    updateProgress();
+    saveState();
+  }
+  function updateProgress(){
+    const pct=((step-1)/(stepsTotal-1))*100; $('#progressBar').style.width=pct+'%';
+    $$('#stepDots .dot').forEach((d,i)=>d.classList.toggle('active',i<step));
+  }
+
+  function validateStep(n){
+    if(n===1){
+      const req=['f_nombre','f_apellidos','f_empresa','f_puesto','f_correo'].map(id=>$('#'+id));
+      for(const i of req){ if(!i.value.trim()){ markError(i); showToast('Completa los campos obligatorios.'); shake($('#next')); return false; } }
+      const ok=/\S+@\S+\.\S+/.test($('#f_correo').value); if(!ok){ markError($('#f_correo')); showToast('Escribe un correo válido.'); shake($('#next')); return false; }
+    }
+    // Nuevo: validar paso 3 (al menos 1 repositorio)
+    if(n===3){
+      const count = $$('input[data-group="reposDatos"]:checked').length + ($('#repos-otros').value.trim()?1:0);
+      if(count<1){ showToast('Selecciona al menos un repositorio de datos (o escribe Otro).'); shake($('#next')); return false; }
+    }
+    // Último paso ahora es 9
+    if(n===9){
+      const areas = $$('input[data-group="areasImpacto"]:checked').length + ($('#areas-otros').value.trim()?1:0);
+      if(areas<3){ showToast('Selecciona al menos 3 áreas de impacto.'); shake($('#submit')); return false }
+      const sols = $$('input[data-group="soluciones"]:checked').length + ($('#soluciones-otros').value.trim()?1:0);
+      if(sols>3){ showToast('Máximo 3 soluciones de interés.'); shake($('#submit')); return false }
+      if(!$('#consent').checked){ showToast('Debes aceptar el uso de datos.'); shake($('#submit')); return false }
+    }
+    return true;
+  }
+  $('#prev').addEventListener('click',()=>{ step=Math.max(1,step-1); showStep(); });
+  $('#next').addEventListener('click',()=>{ if(validateStep(step)){ step=Math.min(stepsTotal,step+1); showStep(); } });
+  document.addEventListener('input', ev=>{ if(ev.target.classList.contains('error')) ev.target.classList.remove('error'); });
+
+  document.addEventListener('change',ev=>{
+    if(ev.target.matches('input[data-group="soluciones"]')){
+      const count = $$('input[data-group="soluciones"]:checked').length;
+      $$('input[data-group="soluciones"]').forEach(n=> n.disabled=!n.checked && (count>=3));
+    }
+    if(ev.target.matches('input, textarea')) saveState();
+  });
+
+  const STORAGE_KEY='mxaiDiagState';
+  function state(){
+    const o={ step, fields:{
+      f_nombre:$('#f_nombre').value, f_apellidos:$('#f_apellidos').value, f_empresa:$('#f_empresa').value,
+      f_puesto:$('#f_puesto').value, f_correo:$('#f_correo').value, f_desafios:$('#f_desafios')?.value||'',
+      consent:$('#consent').checked, erpOtros:$('#erp-otros').value, crmOtros:$('#crm-otros').value,
+      iaOtros:$('#tipos-ia-otros').value, areasOtros:$('#areas-otros').value, solOtros:$('#soluciones-otros').value,
+      // Nuevos campos de datos
+      reposOtros:$('#repos-otros').value,
+      datosOwner:$('#datos-owner').value,
+      'datos.calidad': ($('input[name="datos.calidad"]:checked')||{}).value||'',
+      'datos.frescura': ($('input[name="datos.frescura"]:checked')||{}).value||'',
+    }, checks:{} };
+    // Guardar checks
+    ['erp','crm','tiposIA','areasImpacto','soluciones','reposDatos'].forEach(g=>{
+      o.checks[g]=$$(`input[data-group="${g}"]`).filter(x=>x.checked).map(x=>x.id);
+    });
+    const names = ['dec.estrategia','dec.metricas','dec.legales','dec.altaDireccion','dec.pilotos', 'comp.conceptos','comp.tendencias','comp.capacitaciones','comp.viabilidad', 'dev.talento','dev.noGratis','dev.modelos','dev.plataformas','dev.proveedores', 'use.clave','use.eficiencia','use.interaccion','use.escalar', 'gov.lideres','gov.comunicacion','gov.roles','gov.cultura'];
+    names.forEach(n=>{ o.fields[n] = ($(`input[name="${n}"]:checked`)||{}).value||''; });
+    return o;
+  }
+  function saveState(){ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state())); }catch(e){} }
+  function loadState(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY); if(!raw) return null;
+      const s = JSON.parse(raw);
+      Object.entries(s.fields||{}).forEach(([k,v])=>{
+        const el = $(`[name="${k}"]`) || $('#'+k); if(!el) return;
+        if(el.type==='checkbox') el.checked=!!v; else el.value = v;
+      });
+      Object.entries(s.checks||{}).forEach(([g,ids])=> ids.forEach(id=>$('#'+id)?.click() ));
+      Object.entries(s.fields||{}).forEach(([k,v])=>{
+        if(k.includes('.')){ const r = $(`input[name="${k}"][value="${v}"]`); if(r) r.checked=true; }
+      });
+      return s.step || 1;
+    }catch(e){ return null }
+  }
+  function hasSaved(){ return !!localStorage.getItem(STORAGE_KEY); }
+  function resetSaved(){ localStorage.removeItem(STORAGE_KEY); $('#resumeBox').style.display='none'; }
+  if(hasSaved()){ $('#resumeBox').style.display='block'; }
+  $('#resumeLink').addEventListener('click',()=>{ const st=loadState(); if(st){ step=st; openModal(); showStep(); } });
+  $('#resetLink').addEventListener('click',()=>{ resetSaved(); showToast('Progreso eliminado.'); });
+
+  function hash(s){ let h=0; for(let i=0;i<s.length;i++){ h=((h<<5)-h)+s.charCodeAt(i); h|=0 } return 'h'+h }
+  function isLocked(email, emp){ try{ const key='aiDiagLock-'+hash(email.toLowerCase().trim()+'|'+emp.toLowerCase().trim()); return {key,exists:!!localStorage.getItem(key)} }catch(e){ return {key:null,exists:false} } }
+
+  function setHidden(name,val){ const f=$('#gform'); const i=document.createElement('input'); i.type='hidden'; i.name=name; i.value=val; f.appendChild(i); }
+  function clearHidden(){ $('#gform').innerHTML=''; }
+  function appendGroup(groupKey, otherValue){
+    $$(`input[data-group="${groupKey}"]:checked`).forEach(chk=> setHidden(GF[groupKey], chk.value));
+    if(otherValue && otherValue.trim()){
+      setHidden(GF[groupKey],"__other_option__");
+      setHidden(`${GF[groupKey]}.other_option_response`, otherValue.trim());
+    }
+  }
+  function val(name){ return Number(($(`input[name="${name}"]:checked`)||{}).value||0) }
+  function computeScores(){
+    const s={
+      decisiones:(val('dec.estrategia')+val('dec.metricas')+val('dec.legales')+val('dec.altaDireccion')+val('dec.pilotos'))/5,
+      compBasicas:(val('comp.conceptos')+val('comp.tendencias')+val('comp.capacitaciones')+val('comp.viabilidad'))/4,
+      desarrollo:(val('dev.talento')+val('dev.noGratis')+val('dev.modelos')+val('dev.plataformas')+val('dev.proveedores'))/5,
+      utilizacion:(val('use.clave')+val('use.eficiencia')+val('use.interaccion')+val('use.escalar'))/4,
+      liderazgo:(val('gov.lideres')+val('gov.comunicacion')+val('gov.roles')+val('gov.cultura'))/4,
+    };
+    const overall=(s.decisiones+s.compBasicas+s.desarrollo+s.utilizacion+s.liderazgo)/5;
+    return {s, overall};
+  }
+  function cls(x){ if(x<1.5) return "No existe"; if(x<2.5) return "Exploración"; if(x<3.5) return "Básica"; if(x<4.5) return "En expansión"; return "Madurez"; }
+  function f1(n){ return (Math.round(n*10)/10).toFixed(1) }
+
+  let radarChart=null;
+  function showResults(){
+    const {s,overall}=computeScores();
+    const k=$('#kpi'); k.innerHTML='';
+    const blocks=[["Decisiones",s.decisiones],["Competencias",s.compBasicas],["Desarrollo",s.desarrollo],["Utilización",s.utilizacion],["Liderazgo",s.liderazgo],["Global",overall]];
+    blocks.forEach(([n,v])=>{
+      const b=document.createElement('div'); b.className='card';
+      b.innerHTML=`<div style="font-weight:800">${n}</div><div style="font-size:28px">${f1(v)}</div><div class="note">${cls(v)}</div>`;
+      k.appendChild(b);
+    });
+    const ctx=$('#radar').getContext('2d'); if(radarChart) radarChart.destroy();
+    radarChart=new Chart(ctx,{type:'radar',data:{labels:['Decisiones','Competencias','Desarrollo','Utilización','Liderazgo'],datasets:[{label:'Puntaje (1–5)',data:[s.decisiones,s.compBasicas,s.desarrollo,s.utilizacion,s.liderazgo]}]},options:{scales:{r:{min:1,max:5,ticks:{stepSize:1}}}}});
+    $('#results').classList.remove('hide');
+  }
+
+  $('#submit').addEventListener('click', ()=>{
+    if(!validateStep(9)) return;
+    const email=$('#f_correo').value, emp=$('#f_empresa').value;
+    const lock=isLocked(email,emp);
+    if(lock.exists){ showToast('Ya se envió un diagnóstico con esa empresa/correo en este navegador.'); return; }
+    if(!confirm('¿Confirmas el envío del diagnóstico?')) return;
+
+    clearHidden();
+    setHidden(GF.nombre,$('#f_nombre').value);
+    setHidden(GF.apellidos,$('#f_apellidos').value);
+    setHidden(GF.empresa,$('#f_empresa').value);
+    setHidden(GF.puesto,$('#f_puesto').value);
+    setHidden(GF.correo,$('#f_correo').value);
+
+    appendGroup('erp',$('#erp-otros').value);
+    appendGroup('crm',$('#crm-otros').value);
+    appendGroup('tiposIA',$('#tipos-ia-otros').value);
+    appendGroup('areasImpacto',$('#areas-otros').value);
+    appendGroup('soluciones',$('#soluciones-otros').value);
+
+    // Nuevo: Datos & Gobierno de Datos
+    appendGroup('reposDatos',$('#repos-otros').value);
+    setHidden(GF.datos.calidad, ($('input[name="datos.calidad"]:checked')||{}).value||'');
+    setHidden(GF.datos.frescura, ($('input[name="datos.frescura"]:checked')||{}).value||'');
+    setHidden(GF.datos.owner, $('#datos-owner').value||'');
+
+    function copy(map,prefix){ Object.keys(map).forEach(k=> setHidden(map[k], ($(`input[name="${prefix}.${k}"]:checked`)||{}).value||'' )); }
+    copy(GF.decisiones,'dec'); copy(GF.compBasicas,'comp'); copy(GF.desarrollo,'dev'); copy(GF.utilizacion,'use'); copy(GF.liderazgo,'gov');
+
+    setHidden(GF.desafios, $('#f_desafios').value||'');
+
+    showResults(); $('#gform').submit();
+    if(lock.key) localStorage.setItem(lock.key, String(Date.now()));
+    $('#submit').disabled=true; $('#submit').textContent='Enviado ✓';
+    localStorage.removeItem('mxaiDiagState');
+  });
+
+  const st = loadState(); if(st){ step=st; }
+  showStep();
+});
+</script>
+</body>
+</html>
